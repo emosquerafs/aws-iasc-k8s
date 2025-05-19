@@ -86,3 +86,24 @@ output "bastion_ssh_command_dns" {
   description = "SSH command to connect to the bastion host using DNS name"
   value       = var.create_dns_record ? "ssh ec2-user@${module.bastion_dns[0].record_name}" : null
 }
+
+# Delegated Zones Outputs
+output "delegated_zone_ids" {
+  description = "Map of environment names to their hosted zone IDs"
+  value       = var.create_delegated_zones ? module.delegated_zones[0].zone_ids : null
+}
+
+output "delegated_zone_name_servers" {
+  description = "Map of environment names to their name servers"
+  value       = var.create_delegated_zones ? module.delegated_zones[0].name_servers : null
+}
+
+output "delegated_zone_fqdns" {
+  description = "Map of environment names to their fully qualified domain names"
+  value       = var.create_delegated_zones ? module.delegated_zones[0].fqdns : null
+}
+
+output "environment_service_records" {
+  description = "Map of service record FQDNs created in the delegated zones"
+  value       = var.create_delegated_zones && length(var.environment_service_records) > 0 ? module.delegated_zones[0].service_record_fqdns : null
+}

@@ -35,3 +35,24 @@ create_dns_record = true               # Set to true to create DNS record
 hosted_zone_name  = "example.com"      # Your Route53 hosted zone name
 private_zone      = false              # Set to true if using a private hosted zone
 bastion_dns_name  = "bastion"          # This will create bastion.example.com
+
+# Delegated Zones Settings
+create_delegated_zones = false         # Set to true to create delegated zones for environments
+environments           = ["dev", "stg", "prod"]  # List of environments to create zones for
+environment_service_records = [
+  # Example service records - uncomment and modify as needed
+  # {
+  #   env       = "dev"
+  #   name      = "api"
+  #   type      = "A"
+  #   ttl       = 300
+  #   addresses = ["10.0.1.123"]
+  # },
+  # {
+  #   env       = "stg"
+  #   name      = "api"
+  #   type      = "A"
+  #   ttl       = 300
+  #   addresses = ["10.0.2.123"]
+  # }
+]

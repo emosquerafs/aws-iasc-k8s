@@ -68,14 +68,14 @@ variable "bastion_instance_type" {
 variable "bastion_allowed_cidr_blocks" {
   description = "List of CIDR blocks allowed to SSH to the bastion"
   type        = list(string)
-  default     = ["0.0.0.0/0"]  # Open to world by default - restrict in production
+  default     = ["0.0.0.0/0"] # Open to world by default - restrict in production
 }
 
 variable "ssh_public_keys" {
   description = "Map of key names to public key material (the content of your *.pub files)"
   type        = map(string)
   default     = {}
-  
+
   # Example:
   # ssh_public_keys = {
   #   "username" = "ssh-rsa AAAAB3NzaC1yc2EAAA... user@example.com"
@@ -131,4 +131,29 @@ variable "bastion_dns_name" {
   description = "The DNS name to assign to the bastion host (e.g., 'wipa-bastion' will create wipa-bastion.openkapitals.com)"
   type        = string
   default     = "wipa-bastion"
+}
+
+# Delegated zone settings
+variable "create_delegated_zones" {
+  description = "Whether to create delegated zones for environments"
+  type        = bool
+  default     = false
+}
+
+variable "environments" {
+  description = "List of environments to create delegated zones for"
+  type        = list(string)
+  default     = ["dev", "stg", "prod"]
+}
+
+variable "environment_service_records" {
+  description = "List of service records to create in delegated zones"
+  type = list(object({
+    env       = string
+    name      = string
+    type      = string
+    ttl       = number
+    addresses = list(string)
+  }))
+  default = []
 }

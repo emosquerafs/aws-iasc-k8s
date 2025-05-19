@@ -155,7 +155,9 @@ This project is organized in a modular structure to enable reusability and maint
 └── modules/             # Directory containing all the module definitions
     ├── vpc/             # VPC network infrastructure module
     ├── key-pairs/       # SSH key pairs management module
-    └── bastion/         # Bastion host module
+    ├── bastion/         # Bastion host module
+    ├── route53/         # Route53 DNS management module
+    └── delegated-zones/ # Delegated DNS zones for environments
 ```
 
 ### Module Descriptions
@@ -164,6 +166,7 @@ This project is organized in a modular structure to enable reusability and maint
 2. **Key Pairs Module**: Manages multiple SSH key pairs for secure access to EC2 instances.
 3. **Bastion Module**: Creates a secure bastion host in a public subnet using the terraform-aws-modules/ec2-instance/aws module. The bastion uses SSH keys from the key-pairs module and can be configured with IAM roles, user data, and other advanced options.
 4. **Route53 Module**: Creates DNS records for the bastion host.
+5. **Delegated Zones Module**: Creates environment-specific DNS zones (e.g., dev.example.com, stg.example.com) using the terraform-aws-modules/route53 modules.
 
 ## DNS Configuration
 
@@ -185,6 +188,68 @@ bastion_dns_name  = "wipa-bastion"       # Subdomain name (creates wipa-bastion.
    - The DNS name: `ssh ec2-user@wipa-bastion.openkapitals.com`
 
 The DNS record will automatically update if the bastion's IP address changes (e.g., if you recreate the instance).
+
+## Delegated Zones for Environment-Specific DNS
+
+This infrastructure supports creating delegated zones for different environments (dev, staging, production). This allows for separate DNS management for each environment with proper subdomain delegation.
+
+### What is a Delegated Zone?
+
+A delegated zone in AWS Route53 is a DNS management strategy where you create separate hosted zones for subdomains of your main domain. This delegation allows different parts of your domain namespace to be managed independently, which is particularly useful for organizing resources across multiple environments.
+
+### Configuring Delegated Zones
+
+1. Make sure you have a Route53 hosted zone set up for your main domain (e.g., `openkapitals.com`)
+2. In your `terraform.tfvars` file, set the following variables:
+
+```hcl
+# Delegated Zones Settings
+create_delegated_zones = true          # Set to true to create delegated zones for environments
+environments           = ["dev", "stg", "prod"]  # List of environments to create zones for
+```
+
+3. After applying the Terraform configuration, you will have separate DNS zones for:
+   - `dev.openkapitals.com`
+   - `stg.openkapitals.com`
+   - `prod.openkapitals.com`
+
+### Adding Service Records to Delegated Zones
+
+You can add DNS records for services in each environment by configuring the `environment_service_records` variable:
+
+```hcl
+environment_service_records = [
+  {
+    env       = "dev"
+    name      = "api"  # Creates api.dev.openkapitals.com
+    type      = "A"
+    ttl       = 300
+    addresses = ["10.0.1.123"]
+  },
+  {
+    env       = "stg"
+    name      = "api"  # Creates api.stg.openkapitals.com
+    type      = "A"
+    ttl       = 300
+    addresses = ["10.0.2.123"]
+  }
+]
+```
+
+### Benefits of Using Delegated Zones
+
+- **Separation of concerns**: Different teams can manage different environments
+- **Access control**: Grant specific permissions for each zone
+- **Organization**: Better organization of DNS records by environment
+- **Scalability**: Each zone can have its own limits and quotas
+
+### Technical Implementation
+
+The delegated zones feature is implemented using the official AWS Terraform modules:
+- `terraform-aws-modules/route53/aws//modules/zones` for zone creation
+- `terraform-aws-modules/route53/aws//modules/records` for record management
+
+These AWS modules ensure best practices and compatibility with AWS Route53 services.
 
 ## Outputs
 
