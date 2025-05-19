@@ -20,14 +20,12 @@ output "fqdns" {
 
 output "delegation_record_fqdns" {
   description = "The FQDNs of the delegation NS records"
-  value       = module.delegation_records.route53_record_fqdn
+  value       = length(var.environments) > 0 ? module.delegation_records[0].route53_record_fqdn : {}
 }
 
 output "service_record_fqdns" {
   description = "Map of service record FQDNs"
-  value = length(var.service_records) > 0 ? merge([
-    for key, record in module.service_records : {
-      for name, fqdn in record.route53_record_fqdn : key => fqdn
-    }
-  ]...) : {}
+  value = length(var.service_records) > 0 ? {
+    for key, record in aws_route53_record.service_records : key => "${record.name}.${record.zone_id}"
+  } : {}
 }

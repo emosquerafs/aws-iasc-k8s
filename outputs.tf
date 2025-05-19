@@ -74,17 +74,17 @@ output "primary_key_name" {
 # DNS Outputs
 output "bastion_dns_name" {
   description = "DNS name of the bastion host"
-  value       = var.create_dns_record ? module.bastion_dns[0].fqdn : null
+  value       = var.create_dns_record && !var.create_delegated_zones && length(module.bastion_dns) > 0 ? module.bastion_dns[0].fqdn : (var.create_dns_record && var.create_delegated_zones ? "${var.bastion_dns_name}.dev.${var.hosted_zone_name}" : null)
 }
 
 output "hosted_zone_id" {
   description = "ID of the hosted zone used for DNS records"
-  value       = var.create_dns_record ? module.bastion_dns[0].zone_id : null
+  value       = var.create_dns_record && !var.create_delegated_zones && length(module.bastion_dns) > 0 ? module.bastion_dns[0].zone_id : (var.create_delegated_zones && length(module.delegated_zones) > 0 ? module.delegated_zones[0].zone_ids["dev.${var.hosted_zone_name}"] : null)
 }
 
 output "bastion_ssh_command_dns" {
   description = "SSH command to connect to the bastion host using DNS name"
-  value       = var.create_dns_record ? "ssh ec2-user@${module.bastion_dns[0].record_name}" : null
+  value       = var.create_dns_record && !var.create_delegated_zones && length(module.bastion_dns) > 0 ? "ssh ec2-user@${module.bastion_dns[0].record_name}" : (var.create_dns_record && var.create_delegated_zones ? "ssh ec2-user@${var.bastion_dns_name}.dev.${var.hosted_zone_name}" : null)
 }
 
 # Delegated Zones Outputs

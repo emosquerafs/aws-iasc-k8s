@@ -60,10 +60,10 @@ module "bastion" {
   tags = local.common_tags
 }
 
-# Route53 DNS for Bastion Host
+# Route53 DNS for Bastion Host - Using parent zone (disabled when using delegated zones)
 module "bastion_dns" {
   source = "./modules/route53"
-  count  = var.create_dns_record ? 1 : 0
+  count  = (var.create_dns_record && !var.create_delegated_zones) ? 1 : 0
 
   hosted_zone_name = var.hosted_zone_name
   private_zone     = var.private_zone
@@ -79,10 +79,20 @@ module "delegated_zones" {
   source = "./modules/delegated-zones"
   count  = var.create_delegated_zones ? 1 : 0
 
-  root_domain     = var.hosted_zone_name
-  environments    = var.environments
-  delegation_ttl  = 300
-  service_records = var.environment_service_records
+  root_domain    = var.hosted_zone_name
+  environments   = var.environments
+  delegation_ttl = 300
+
+  # Process service records to inject IP address for bastion if needed
+  service_records = [
+    for record in var.environment_service_records : 
+    record.name == var.bastion_dns_name && record.type == "A" ? 
+      # Replace the placeholder address with the actual bastion IP
+      merge(record, {
+        addresses = [var.bastion_create_elastic_ip ? module.bastion.bastion_elastic_ip : module.bastion.bastion_public_ip]
+      }) : 
+      record
+  ]
 
   tags = local.common_tags
 }
