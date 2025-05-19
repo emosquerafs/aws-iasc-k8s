@@ -48,17 +48,20 @@ terraform apply
 
 ### Remote State Configuration
 
-This project uses an S3 bucket for remote state storage. The configuration is stored in `backend.tfvars` file:
+This project uses an S3 bucket for remote state storage with S3 lockfile-based state locking (available in Terraform 1.12.0). The configuration is stored in `backend.tfvars` file:
 
 ```hcl
-encrypt      = true
 region       = "us-east-1"
-bucket       = "proof-eenee2ma9ohxeiquua2ingaipaz6eerahsugheesaen9asa3fee1koor"
+bucket       = "wipa-terraform-backend"
 key          = "networking/terraform.tfstate"
+encrypt      = true
+use_lockfile = true  # Enables state file locking using an S3 lock file
 ```
 
-Benefits of using remote state:
+Benefits of using remote state with S3 lockfile:
 - Team collaboration: Multiple team members can work on the infrastructure
+- State locking: Prevents concurrent operations that could corrupt state
+- Security: State is encrypted at rest in S3
 - Secure storage: State file is encrypted at rest in S3
 - Versioning: S3 bucket versioning preserves previous states
 - Backup: S3 provides reliable backup for your state file

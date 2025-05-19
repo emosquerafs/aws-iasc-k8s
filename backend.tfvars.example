@@ -1,7 +1,16 @@
 # S3 backend configuration - EXAMPLE FILE
 # Copy this to backend.tfvars and modify as needed
 
-encrypt      = true
-region       = "us-east-1"
-bucket       = "your-terraform-state-bucket-name" 
-key          = "networking/terraform.tfstate"
+region                = "us-east-1"
+bucket                = "your-terraform-state-bucket-name" 
+key                   = "networking/terraform.tfstate"
+encrypt               = true
+
+# State locking options - using S3 lock file (new in Terraform 1.12.0)
+use_lockfile          = true  # Enable state file locking using an S3 lock file
+dynamodb_table        = ""    # Empty means don't use DynamoDB for locking
+skip_s3_checksum      = false # Keep S3 checksum verification enabled
+
+# Additional S3 options
+skip_metadata_api_check = false
+force_path_style      = false
