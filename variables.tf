@@ -89,3 +89,21 @@ variable "bastion_create_elastic_ip" {
   type        = bool
   default     = true
 }
+
+variable "bastion_create_iam_profile" {
+  description = "Whether to create an IAM instance profile for the bastion host"
+  type        = bool
+  default     = false
+}
+
+variable "bastion_iam_policies" {
+  description = "Map of IAM policies to attach to the bastion host role"
+  type        = map(string)
+  default     = {}
+}
+
+variable "bastion_user_data" {
+  description = "User data script for the bastion host"
+  type        = string
+  default     = ""
+}

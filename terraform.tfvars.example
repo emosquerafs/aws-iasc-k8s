@@ -16,6 +16,11 @@ single_nat_gateway = true
 bastion_instance_type = "t3.micro"
 bastion_allowed_cidr_blocks = ["0.0.0.0/0"]  # IMPORTANT: Replace with your IP address for security
 bastion_create_elastic_ip = true
+bastion_create_iam_profile = false
+bastion_iam_policies = {
+  # "AmazonS3ReadOnlyAccess" = "arn:aws:iam::aws:policy/AmazonS3ReadOnlyAccess"
+}
+bastion_user_data = ""
 
 # SSH key pairs
 # Map of key names to public key material

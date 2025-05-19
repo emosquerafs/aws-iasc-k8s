@@ -86,6 +86,11 @@ single_nat_gateway = true
 bastion_instance_type = "t3.nano"
 bastion_allowed_cidr_blocks = ["YOUR_IP_ADDRESS/32"]  # Replace with your IP address
 bastion_create_elastic_ip = true
+bastion_create_iam_profile = false
+bastion_iam_policies = {
+  # "AmazonS3ReadOnlyAccess" = "arn:aws:iam::aws:policy/AmazonS3ReadOnlyAccess"
+}
+bastion_user_data = ""
 
 # SSH key pairs
 # Map of key names to public key material
@@ -114,7 +119,10 @@ You can customize the deployment by modifying the variables in `terraform.tfvars
 - `ssh_public_keys`: Map of key names to public key material for SSH access
 - `bastion_instance_type`: EC2 instance type for the bastion host
 - `bastion_allowed_cidr_blocks`: CIDR blocks allowed to SSH to the bastion
-- `public_subnets`: CIDR blocks for public subnets
+- `bastion_create_elastic_ip`: Whether to create an Elastic IP for the bastion
+- `bastion_create_iam_profile`: Whether to create an IAM instance profile
+- `bastion_iam_policies`: Map of IAM policies to attach to the bastion role
+- `bastion_user_data`: User data script for the bastion instance
 - `enable_nat_gateway`: Whether to create NAT Gateway
 - `single_nat_gateway`: Use single NAT Gateway for all AZs
 - `environment`: Environment name (e.g., dev, staging, prod)
@@ -141,7 +149,7 @@ This project is organized in a modular structure to enable reusability and maint
 
 1. **VPC Module**: Creates a Virtual Private Cloud with public and private subnets, NAT Gateway, Internet Gateway, and route tables.
 2. **Key Pairs Module**: Manages multiple SSH key pairs for secure access to EC2 instances.
-3. **Bastion Module**: Creates a secure bastion host in a public subnet, using keys from the key-pairs module.
+3. **Bastion Module**: Creates a secure bastion host in a public subnet using the terraform-aws-modules/ec2-instance/aws module. The bastion uses SSH keys from the key-pairs module and can be configured with IAM roles, user data, and other advanced options.
 
 ## Outputs
 
@@ -154,7 +162,11 @@ After applying the configuration, you can use the following outputs:
 - `nat_public_ips`: Public IPs of NAT Gateways
 - `private_route_table_ids`: IDs of private route tables
 - `public_route_table_ids`: IDs of public route tables
+- `bastion_id`: ID of the bastion instance
+- `bastion_arn`: ARN of the bastion instance
 - `bastion_public_ip`: Public IP of the bastion host
 - `bastion_elastic_ip`: Elastic IP of the bastion host (if enabled)
+- `bastion_security_group_id`: ID of the security group attached to the bastion
+- `bastion_iam_role_name`: Name of the IAM role attached to the bastion (if enabled)
 - `bastion_ssh_command`: SSH command to connect to the bastion
 - `key_pair_names`: Map of key names to AWS key pair names

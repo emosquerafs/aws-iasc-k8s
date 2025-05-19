@@ -50,5 +50,12 @@ module "bastion" {
   key_pair_name          = module.key_pairs.primary_key_name
   create_elastic_ip      = var.bastion_create_elastic_ip
   
+  # IAM configuration
+  create_iam_instance_profile = var.bastion_create_iam_profile
+  iam_role_name               = "${var.vpc_name}-bastion-role"
+  iam_role_policies           = var.bastion_iam_policies
+  
+  user_data = var.bastion_user_data
+  
   tags = local.common_tags
 }

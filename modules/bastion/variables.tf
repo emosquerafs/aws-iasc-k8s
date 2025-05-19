@@ -55,6 +55,24 @@ variable "user_data" {
   default     = ""
 }
 
+variable "create_iam_instance_profile" {
+  description = "Whether to create an IAM instance profile for the bastion"
+  type        = bool
+  default     = false
+}
+
+variable "iam_role_name" {
+  description = "Name of the IAM role to attach to the bastion (if create_iam_instance_profile is true)"
+  type        = string
+  default     = ""
+}
+
+variable "iam_role_policies" {
+  description = "IAM policies to attach to the bastion role"
+  type        = map(string)
+  default     = {}
+}
+
 variable "tags" {
   description = "A map of tags to add to all resources"
   type        = map(string)
