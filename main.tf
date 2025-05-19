@@ -59,3 +59,17 @@ module "bastion" {
   
   tags = local.common_tags
 }
+
+# Route53 DNS for Bastion Host
+module "bastion_dns" {
+  source = "./modules/route53"
+  count  = var.create_dns_record ? 1 : 0
+  
+  hosted_zone_name = var.hosted_zone_name
+  private_zone     = var.private_zone
+  dns_record_name  = var.bastion_dns_name
+  ip_address       = var.bastion_create_elastic_ip ? module.bastion.bastion_elastic_ip : module.bastion.bastion_public_ip
+  dns_ttl          = 300
+  
+  tags = local.common_tags
+}

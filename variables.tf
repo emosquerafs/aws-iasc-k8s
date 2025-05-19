@@ -107,3 +107,28 @@ variable "bastion_user_data" {
   type        = string
   default     = ""
 }
+
+# DNS settings for bastion host
+variable "create_dns_record" {
+  description = "Whether to create a DNS record for the bastion host"
+  type        = bool
+  default     = true
+}
+
+variable "hosted_zone_name" {
+  description = "The name of the hosted zone where the DNS record will be created"
+  type        = string
+  default     = "singularit.co"
+}
+
+variable "private_zone" {
+  description = "Whether the hosted zone is private"
+  type        = bool
+  default     = false
+}
+
+variable "bastion_dns_name" {
+  description = "The DNS name to assign to the bastion host (e.g., 'wipa-bastion' will create wipa-bastion.singularit.co)"
+  type        = string
+  default     = "wipa-bastion"
+}

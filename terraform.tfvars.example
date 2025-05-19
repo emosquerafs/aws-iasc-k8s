@@ -29,3 +29,9 @@ ssh_public_keys = {
   # Add more keys as needed following the same pattern:
   # "username" = "ssh-rsa ..."
 }
+
+# DNS settings
+create_dns_record = true               # Set to true to create DNS record
+hosted_zone_name  = "example.com"      # Your Route53 hosted zone name
+private_zone      = false              # Set to true if using a private hosted zone
+bastion_dns_name  = "bastion"          # This will create bastion.example.com

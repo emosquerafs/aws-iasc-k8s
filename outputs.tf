@@ -70,3 +70,19 @@ output "primary_key_name" {
   description = "Name of the primary key pair used for the bastion"
   value       = module.key_pairs.primary_key_name
 }
+
+# DNS Outputs
+output "bastion_dns_name" {
+  description = "DNS name of the bastion host"
+  value       = var.create_dns_record ? module.bastion_dns[0].fqdn : null
+}
+
+output "hosted_zone_id" {
+  description = "ID of the hosted zone used for DNS records"
+  value       = var.create_dns_record ? module.bastion_dns[0].zone_id : null
+}
+
+output "bastion_ssh_command_dns" {
+  description = "SSH command to connect to the bastion host using DNS name"
+  value       = var.create_dns_record ? "ssh ec2-user@${module.bastion_dns[0].record_name}" : null
+}
