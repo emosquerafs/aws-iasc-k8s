@@ -8,12 +8,6 @@ terraform {
     }
   }
 
-  # Uncomment the following block if you want to use a remote backend
-  # backend "s3" {
-  #   bucket         = "singularit-terraform-state"
-  #   key            = "infrastructure/networking/terraform.tfstate"
-  #   region         = "us-east-1"
-  #   encrypt        = true
-  #   dynamodb_table = "terraform-locks"
-  # }
+  # S3 backend configuration
+  backend "s3" {}
 }

@@ -24,10 +24,14 @@ This repository contains Terraform code for deploying and managing AWS VPC infra
 
 1. Clone this repository
 2. Create a `terraform.tfvars` file with required variables (see next section)
-3. Initialize Terraform:
+3. Initialize Terraform with the S3 backend:
 
 ```bash
-terraform init
+# Either run the initialization script
+./init-backend.sh
+
+# Or initialize manually
+terraform init -backend-config=backend.tfvars
 ```
 
 4. Verify the plan:
@@ -41,6 +45,23 @@ terraform plan
 ```bash
 terraform apply
 ```
+
+### Remote State Configuration
+
+This project uses an S3 bucket for remote state storage. The configuration is stored in `backend.tfvars` file:
+
+```hcl
+encrypt      = true
+region       = "us-east-1"
+bucket       = "proof-eenee2ma9ohxeiquua2ingaipaz6eerahsugheesaen9asa3fee1koor"
+key          = "networking/terraform.tfstate"
+```
+
+Benefits of using remote state:
+- Team collaboration: Multiple team members can work on the infrastructure
+- Secure storage: State file is encrypted at rest in S3
+- Versioning: S3 bucket versioning preserves previous states
+- Backup: S3 provides reliable backup for your state file
 
 ### Required terraform.tfvars File
 
