@@ -27,6 +27,16 @@ module "vpc" {
   tags = local.common_tags
 }
 
+# Key Pairs Module
+module "key_pairs" {
+  source = "./modules/key-pairs"
+  
+  name_prefix = var.vpc_name
+  public_keys = var.ssh_public_keys
+  
+  tags = local.common_tags
+}
+
 # Bastion Host Module
 module "bastion" {
   source = "./modules/bastion"
@@ -37,7 +47,7 @@ module "bastion" {
   
   instance_type          = var.bastion_instance_type
   allowed_ssh_cidr_blocks = var.bastion_allowed_cidr_blocks
-  public_key             = var.bastion_public_key
+  key_pair_name          = module.key_pairs.primary_key_name
   create_elastic_ip      = var.bastion_create_elastic_ip
   
   tags = local.common_tags

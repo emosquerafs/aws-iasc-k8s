@@ -9,6 +9,8 @@ This repository contains Terraform code for deploying and managing AWS VPC infra
 - **NAT Gateway**: For outbound internet access from private subnets
 - **Internet Gateway**: For inbound/outbound internet access from public subnets
 - **Route Tables**: For controlling traffic flow
+- **Key Pairs**: SSH key pairs for secure access management
+- **Bastion Host**: Secure entry point to the private resources within the VPC
 
 ## Getting Started
 
@@ -21,7 +23,7 @@ This repository contains Terraform code for deploying and managing AWS VPC infra
 ### Initial Setup
 
 1. Clone this repository
-2. Update variables in `terraform.tfvars` if needed
+2. Create a `terraform.tfvars` file with required variables (see next section)
 3. Initialize Terraform:
 
 ```bash
@@ -40,6 +42,44 @@ terraform plan
 terraform apply
 ```
 
+### Required terraform.tfvars File
+
+Since the tfvars file is excluded from version control for security reasons, you'll need to create one. Create a file named `terraform.tfvars` with the following content (adjust values as needed):
+
+```hcl
+# General settings
+aws_region   = "us-east-1"
+environment  = "dev"
+project_name = "SingularIt"
+
+# VPC settings
+vpc_name          = "wipa-vpc"
+vpc_cidr          = "10.0.0.0/16"
+availability_zones = ["us-east-1a", "us-east-1b", "us-east-1c"]
+private_subnets    = ["10.0.1.0/24", "10.0.2.0/24", "10.0.3.0/24"]
+public_subnets     = ["10.0.101.0/24", "10.0.102.0/24", "10.0.103.0/24"]
+enable_nat_gateway = true
+single_nat_gateway = true
+
+# Bastion settings
+bastion_instance_type = "t4.nano"
+bastion_allowed_cidr_blocks = ["YOUR_IP_ADDRESS/32"]  # Replace with your IP address
+bastion_create_elastic_ip = true
+
+# SSH key pairs
+# Map of key names to public key material
+ssh_public_keys = {
+  "your_username" = "YOUR_SSH_PUBLIC_KEY"  # Replace with your SSH public key
+  # Add more keys as needed following the same pattern:
+  # "username" = "ssh-rsa ..."
+}
+```
+
+**Important**: 
+- Replace `YOUR_IP_ADDRESS/32` with your actual IP address to restrict SSH access
+- Replace `your_username` with your actual username
+- Replace `YOUR_SSH_PUBLIC_KEY` with your actual SSH public key (from your `~/.ssh/id_rsa.pub` file or equivalent)
+
 ## Configuration Options
 
 You can customize the deployment by modifying the variables in `terraform.tfvars`:
@@ -50,10 +90,37 @@ You can customize the deployment by modifying the variables in `terraform.tfvars
 - `availability_zones`: List of AZs to use
 - `private_subnets`: CIDR blocks for private subnets
 - `public_subnets`: CIDR blocks for public subnets
+- `ssh_public_keys`: Map of key names to public key material for SSH access
+- `bastion_instance_type`: EC2 instance type for the bastion host
+- `bastion_allowed_cidr_blocks`: CIDR blocks allowed to SSH to the bastion
+- `public_subnets`: CIDR blocks for public subnets
 - `enable_nat_gateway`: Whether to create NAT Gateway
 - `single_nat_gateway`: Use single NAT Gateway for all AZs
 - `environment`: Environment name (e.g., dev, staging, prod)
 - `project_name`: Project name for tagging
+
+## Project Structure
+
+This project is organized in a modular structure to enable reusability and maintainability:
+
+```
+.
+├── main.tf              # Main configuration file that combines all modules
+├── variables.tf         # Input variables for the root module
+├── outputs.tf           # Output values from the root module
+├── terraform.tfvars     # Variable values for your specific deployment
+├── versions.tf          # Terraform and provider version constraints
+└── modules/             # Directory containing all the module definitions
+    ├── vpc/             # VPC network infrastructure module
+    ├── key-pairs/       # SSH key pairs management module
+    └── bastion/         # Bastion host module
+```
+
+### Module Descriptions
+
+1. **VPC Module**: Creates a Virtual Private Cloud with public and private subnets, NAT Gateway, Internet Gateway, and route tables.
+2. **Key Pairs Module**: Manages multiple SSH key pairs for secure access to EC2 instances.
+3. **Bastion Module**: Creates a secure bastion host in a public subnet, using keys from the key-pairs module.
 
 ## Outputs
 
@@ -66,3 +133,7 @@ After applying the configuration, you can use the following outputs:
 - `nat_public_ips`: Public IPs of NAT Gateways
 - `private_route_table_ids`: IDs of private route tables
 - `public_route_table_ids`: IDs of public route tables
+- `bastion_public_ip`: Public IP of the bastion host
+- `bastion_elastic_ip`: Elastic IP of the bastion host (if enabled)
+- `bastion_ssh_command`: SSH command to connect to the bastion
+- `key_pair_names`: Map of key names to AWS key pair names

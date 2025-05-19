@@ -30,19 +30,7 @@ resource "aws_security_group" "bastion" {
   )
 }
 
-# Key Pair
-resource "aws_key_pair" "bastion" {
-  count      = var.key_pair_name == "" && var.public_key != "" ? 1 : 0
-  key_name   = "${var.name_prefix}-bastion-key"
-  public_key = var.public_key
-
-  tags = merge(
-    var.tags,
-    {
-      Name = "${var.name_prefix}-bastion-key"
-    }
-  )
-}
+# Note: Key pairs are now managed by the key-pairs module
 
 # Latest Amazon Linux 2 AMI
 data "aws_ami" "amazon_linux_2" {
@@ -64,7 +52,7 @@ data "aws_ami" "amazon_linux_2" {
 resource "aws_instance" "bastion" {
   ami                         = var.ami_id != "" ? var.ami_id : data.aws_ami.amazon_linux_2.id
   instance_type               = var.instance_type
-  key_name                    = var.key_pair_name != "" ? var.key_pair_name : (var.public_key != "" ? aws_key_pair.bastion[0].key_name : null)
+  key_name                    = var.key_pair_name
   subnet_id                   = var.subnet_id
   vpc_security_group_ids      = [aws_security_group.bastion.id]
   associate_public_ip_address = true

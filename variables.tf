@@ -71,10 +71,17 @@ variable "bastion_allowed_cidr_blocks" {
   default     = ["0.0.0.0/0"]  # Open to world by default - restrict in production
 }
 
-variable "bastion_public_key" {
-  description = "Public key material to create a new key pair for the bastion"
-  type        = string
-  default     = ""
+variable "ssh_public_keys" {
+  description = "Map of key names to public key material (the content of your *.pub files)"
+  type        = map(string)
+  default     = {}
+  
+  # Example:
+  # ssh_public_keys = {
+  #   "username" = "ssh-rsa AAAAB3NzaC1yc2EAAA... user@example.com"
+  # }
+  # 
+  # Important: The value should be the entire contents of your public key file (e.g., ~/.ssh/id_rsa.pub)
 }
 
 variable "bastion_create_elastic_ip" {

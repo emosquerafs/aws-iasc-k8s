@@ -33,15 +33,8 @@ variable "allowed_ssh_cidr_blocks" {
 }
 
 variable "key_pair_name" {
-  description = "Name of the existing key pair to use (leave empty to create a new one)"
+  description = "Name of the key pair to use with the bastion (must exist in AWS)"
   type        = string
-  default     = ""
-}
-
-variable "public_key" {
-  description = "Public key material to create a new key pair (ignored if key_pair_name is provided)"
-  type        = string
-  default     = ""
 }
 
 variable "create_elastic_ip" {

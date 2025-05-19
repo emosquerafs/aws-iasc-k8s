@@ -59,3 +59,14 @@ output "bastion_ssh_command" {
   description = "SSH command to connect to the bastion host"
   value       = module.bastion.ssh_command
 }
+
+# Key Pairs Outputs
+output "key_pair_names" {
+  description = "Map of key names to key pair names in AWS"
+  value       = module.key_pairs.key_pair_names
+}
+
+output "primary_key_name" {
+  description = "Name of the primary key pair used for the bastion"
+  value       = module.key_pairs.primary_key_name
+}
