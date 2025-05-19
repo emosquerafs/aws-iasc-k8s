@@ -62,7 +62,7 @@ enable_nat_gateway = true
 single_nat_gateway = true
 
 # Bastion settings
-bastion_instance_type = "t4.nano"
+bastion_instance_type = "t3.nano"
 bastion_allowed_cidr_blocks = ["YOUR_IP_ADDRESS/32"]  # Replace with your IP address
 bastion_create_elastic_ip = true
 
