@@ -48,12 +48,17 @@ module "delegation_records" {
   
   zone_id = data.aws_route53_zone.parent[0].zone_id
 
+  # IMPORTANT: The keys in the terraform-aws-modules/route53 output maps use the full domain name as keys
+  # Example: For env "dev" and root_domain "example.com", the key is "dev.example.com"
   records = [
-    for env, zone_info in module.delegated_zones.route53_zone_zone_id : {
-      name    = "${env}.${var.root_domain}"
+    for full_domain_key, zone_id in module.delegated_zones.route53_zone_zone_id : {
+      # We need to extract just the environment prefix for the record name
+      # e.g., from "dev.openkapitals.com" we extract "dev"
+      name    = replace(full_domain_key, ".${var.root_domain}", "") 
       type    = "NS"
       ttl     = var.delegation_ttl
-      records = module.delegated_zones.route53_zone_name_servers[env]
+      # Use the full domain key to access the nameservers
+      records = module.delegated_zones.route53_zone_name_servers[full_domain_key]
     }
   ]
 }
