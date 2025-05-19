@@ -175,7 +175,7 @@ The infrastructure supports creating a DNS record for the bastion host using Rou
 ```hcl
 # DNS settings
 create_dns_record = true                 # Set to true to create DNS record
-hosted_zone_name  = "singularit.co"      # Your Route53 hosted zone name
+hosted_zone_name  = "openkapitals.com"      # Your Route53 hosted zone name
 private_zone      = false                # Set to true if using a private hosted zone
 bastion_dns_name  = "wipa-bastion"       # Subdomain name (creates wipa-bastion.singularit.co)
 ```
