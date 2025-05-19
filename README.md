@@ -105,9 +105,9 @@ ssh_public_keys = {
 
 # DNS settings
 create_dns_record = true                 # Set to true to create DNS record
-hosted_zone_name  = "singularit.co"      # Your Route53 hosted zone name
+hosted_zone_name  = "openkapitals.com"      # Your Route53 hosted zone name
 private_zone      = false                # Set to true if using a private hosted zone
-bastion_dns_name  = "wipa-bastion"       # Subdomain name (creates wipa-bastion.singularit.co)
+bastion_dns_name  = "wipa-bastion"       # Subdomain name (creates wipa-bastion.openkapitals.com)
 ```
 
 **Important**: 
@@ -169,7 +169,7 @@ This project is organized in a modular structure to enable reusability and maint
 
 The infrastructure supports creating a DNS record for the bastion host using Route53. To configure DNS:
 
-1. Make sure you have a Route53 hosted zone set up for your domain (e.g., `singularit.co`)
+1. Make sure you have a Route53 hosted zone set up for your domain (e.g., `openkapitals.com`)
 2. In your `terraform.tfvars` file, set the following variables:
 
 ```hcl
@@ -177,12 +177,12 @@ The infrastructure supports creating a DNS record for the bastion host using Rou
 create_dns_record = true                 # Set to true to create DNS record
 hosted_zone_name  = "openkapitals.com"      # Your Route53 hosted zone name
 private_zone      = false                # Set to true if using a private hosted zone
-bastion_dns_name  = "wipa-bastion"       # Subdomain name (creates wipa-bastion.singularit.co)
+bastion_dns_name  = "wipa-bastion"       # Subdomain name (creates wipa-bastion.openkapitals.com)
 ```
 
 3. After applying the Terraform configuration, you can access your bastion host using either:
    - The public IP address: `ssh ec2-user@<BASTION_IP>`
-   - The DNS name: `ssh ec2-user@wipa-bastion.singularit.co`
+   - The DNS name: `ssh ec2-user@wipa-bastion.openkapitals.com`
 
 The DNS record will automatically update if the bastion's IP address changes (e.g., if you recreate the instance).
 

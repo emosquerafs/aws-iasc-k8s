@@ -118,7 +118,7 @@ variable "create_dns_record" {
 variable "hosted_zone_name" {
   description = "The name of the hosted zone where the DNS record will be created"
   type        = string
-  default     = "singularit.co"
+  default     = "openkapitals.com"
 }
 
 variable "private_zone" {
@@ -128,7 +128,7 @@ variable "private_zone" {
 }
 
 variable "bastion_dns_name" {
-  description = "The DNS name to assign to the bastion host (e.g., 'wipa-bastion' will create wipa-bastion.singularit.co)"
+  description = "The DNS name to assign to the bastion host (e.g., 'wipa-bastion' will create wipa-bastion.openkapitals.com)"
   type        = string
   default     = "wipa-bastion"
 }
